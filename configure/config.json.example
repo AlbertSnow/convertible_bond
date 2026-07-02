@@ -1,0 +1,55 @@
+{
+  "mysql": {
+    "qq": {
+      "user": "root",
+      "password": "your_password",
+      "host": "127.0.0.1",
+      "port": 3306
+    },
+    "local": {
+      "user": "root",
+      "password": "your_password",
+      "host": "127.0.0.1",
+      "port": 3306
+    },
+    "kh": {
+      "user": "root",
+      "password": "your_password",
+      "host": "127.0.0.1",
+      "port": 3306
+    }
+  },
+  "mongo": {
+    "qq": {
+      "user": "",
+      "password": "",
+      "host": "127.0.0.1",
+      "port": 27017
+    }
+  },
+  "xc_token_pro": "your_xcsc_tushare_token",
+  "xc_server": "your_xcsc_server",
+  "simulation_server": "your_xcsc_server",
+  "ts_token": "your_tushare_token",
+  "jsl_monitor": {
+    "JSL_USER": "your_jisilu_username",
+    "JSL_PASSWORD": "your_jisilu_password"
+  },
+  "WECHAT_ID": "",
+  "enterprise_wechat": {
+    "userid": "",
+    "agentid": "",
+    "corpid": "",
+    "corpsecret": ""
+  },
+  "mail": {
+    "qq": {
+      "user": "your@email.com"
+    }
+  },
+  "aliyun": {
+    "EMAIL_USER_ALI": "",
+    "LOGIN_EMAIL_ALYI_PASSWORD": ""
+  },
+  "data_path": "./data"
+}
