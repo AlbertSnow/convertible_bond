@@ -5,7 +5,11 @@
 # 可转债指数
 import re
 import sys
-sys.path.append('..')
+from pathlib import Path
+
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(PROJECT_ROOT))
+
 import requests
 from configure.settings import DBSelector
 from common.BaseService import BaseService
@@ -13,7 +17,7 @@ from common.BaseService import BaseService
 # 获取当天的记录
 class CBIndexJSL(BaseService):
     def __init__(self):
-        super(CBIndexJSL, self).__init__('../log/cb_index.log')
+        super(CBIndexJSL, self).__init__(str(PROJECT_ROOT / 'log' / 'cb_index.log'))
         self.db = DBSelector()
         self.to_mysql = False
 
