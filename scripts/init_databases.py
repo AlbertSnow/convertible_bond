@@ -113,7 +113,8 @@ def init_mongo():
     db = client[db_name]
 
     for collection in ('bond_ticks', 'bond_redemption', 'bond_redeem_countdown'):
-        db.create_collection(collection, check_exists=True)
+        if collection not in db.list_collection_names():
+            db.create_collection(collection)
         print(f'  ✓ MongoDB 集合 {db_name}.{collection}')
 
     client.admin.command('ping')

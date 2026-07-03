@@ -19,11 +19,20 @@ def _strip_code(ts_code: str) -> str:
     return ts_code.split('.')[0] if isinstance(ts_code, str) else ts_code
 
 
-def _latest_trade_date(pro) -> str:
+def _latest_trade_date(pro, pro_api=None) -> str:
     end = datetime.date.today().strftime('%Y%m%d')
-    start = (datetime.date.today() - datetime.timedelta(days=14)).strftime('%Y%m%d')
+    start = (datetime.date.today() - datetime.timedelta(days=30)).strftime('%Y%m%d')
     cal = pro.trade_cal(exchange='SSE', start_date=start, end_date=end, is_open='1')
-    return cal.sort_values('cal_date').iloc[-1]['cal_date']
+    trade_dates = cal.sort_values('cal_date')['cal_date'].tolist()
+    if not trade_dates:
+        raise RuntimeError('无法获取交易日历')
+
+    for trade_date in reversed(trade_dates):
+        daily = pro.cb_daily(trade_date=trade_date, fields='ts_code')
+        if daily is not None and not daily.empty:
+            return trade_date
+
+    raise RuntimeError('最近 30 个交易日内均无 cb_daily 数据')
 
 
 def fetch_bond_snapshot(trade_date: str | None = None) -> pd.DataFrame:
