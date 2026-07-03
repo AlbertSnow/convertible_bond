@@ -105,11 +105,13 @@ def main():
         print("  提示: 请确认已安装依赖 (pip install -r requirements.txt)")
 
     print("\n" + "=" * 60)
-    print("更多功能:")
-    print("  python run.py                          # 本演示")
-    print("  python datahub/cb_index.py             # 指数入库(需 MySQL)")
-    print("  python task_weekly_drop.py             # 周跌幅排行(需 MySQL)")
-    print("  jupyter notebook analysis/             # Jupyter 分析 notebooks")
+    print("完整功能:")
+    print("  python scripts/verify_setup.py           # 检查 MySQL/MongoDB/Tushare")
+    print("  python scripts/init_databases.py         # 初始化数据库")
+    print("  python scripts/sync_bond_jisilu.py       # Tushare 同步转债数据")
+    print("  python datahub/cb_index.py               # 指数入库(需 MySQL)")
+    print("  python task_weekly_drop.py               # 周跌幅排行(需 MySQL)")
+    print("  jupyter notebook analysis/               # Jupyter 分析 notebooks")
     print("=" * 60)
 
 

@@ -3,13 +3,10 @@
 # @File : Base.py
 # @Author : Rocky C@www.30daydo.com
 
-
-import xcsc_tushare as xc
 import sys
+
 sys.path.append('..')
-from configure.settings import config
-xc_token_pro=config.get('xc_token_pro')
-xc.set_token(xc_token_pro)
-simulation_server = config.get('simulation_server')
-pro =xc.pro_api(env='prd',server=simulation_server)
-__all__=('pro',)
+from configure.settings import get_tushare_pro
+
+pro = get_tushare_pro()
+__all__ = ('pro',)

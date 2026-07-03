@@ -2,35 +2,42 @@
   "mysql": {
     "qq": {
       "user": "root",
-      "password": "your_password",
+      "password": "",
       "host": "127.0.0.1",
       "port": 3306
     },
     "local": {
       "user": "root",
-      "password": "your_password",
+      "password": "",
       "host": "127.0.0.1",
       "port": 3306
     },
     "kh": {
       "user": "root",
-      "password": "your_password",
+      "password": "",
       "host": "127.0.0.1",
       "port": 3306
     }
   },
   "mongo": {
     "qq": {
-      "user": "",
-      "password": "",
+      "user": "admin",
+      "password": "zhaojialiang",
       "host": "127.0.0.1",
-      "port": 27017
+      "port": 27017,
+      "database": "convertible_bond",
+      "auth_source": "admin"
+    },
+    "local": {
+      "user": "admin",
+      "password": "zhaojialiang",
+      "host": "127.0.0.1",
+      "port": 27017,
+      "database": "convertible_bond",
+      "auth_source": "admin"
     }
   },
-  "xc_token_pro": "your_xcsc_tushare_token",
-  "xc_server": "your_xcsc_server",
-  "simulation_server": "your_xcsc_server",
-  "ts_token": "your_tushare_token",
+  "ts_token": "",
   "jsl_monitor": {
     "JSL_USER": "your_jisilu_username",
     "JSL_PASSWORD": "your_jisilu_password"
