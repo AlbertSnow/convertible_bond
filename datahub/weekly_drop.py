@@ -5,14 +5,17 @@
 
 # 每周跌幅最多的, 默认是周，可以改为月
 import sys
+from pathlib import Path
 
-sys.path.append('..')
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(PROJECT_ROOT))
+
 import datetime
 import pandas as pd
 from filterbond import get_low_price
 from common.BaseService import BaseService
 from common.DataFetch import DataFetcher
-from configure.settings import DBSelector
+from configure.settings import DBSelector, config
 from configure.util import send_from_aliyun
 
 
@@ -20,7 +23,7 @@ class WeeklyDrop(BaseService):
 
     # 计算一周，一个月，一个季度跌幅最多的债
     def __init__(self):
-        super(WeeklyDrop, self).__init__('log/weeklydrop.log')
+        super(WeeklyDrop, self).__init__(str(PROJECT_ROOT / 'log' / 'weeklydrop.log'))
         self.datafetch = DataFetcher()
         self.mongo = DBSelector().mongo('qq')
 
@@ -120,7 +123,10 @@ class WeeklyDrop(BaseService):
         df_volatility = pd.DataFrame(result_volatility)
         body_part_two =df_volatility.to_html(index=False)
 
-        content = body_part_one+'<br><br>'+body_part_two
+        content = body_part_one + '<br><br>' + body_part_two
 
-
-        send_from_aliyun(title=title, content=content, types='html')
+        if config.get('aliyun', {}).get('EMAIL_USER_ALI'):
+            send_from_aliyun(title=title, content=content, types='html')
+        else:
+            print(title)
+            print(content)

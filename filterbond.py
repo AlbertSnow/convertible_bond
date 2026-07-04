@@ -4,10 +4,10 @@
 # @File : filter_bond.py
 # 根据条件选择债券
 
-import tushare as ts
-import pandas as pd
 import datetime
+
 import numpy as np
+import pandas as pd
 
 # pd.set_option('expand_frame_repr', False)
 pd.set_option('display.max_rows', None)
@@ -53,55 +53,67 @@ def double_low(jsl_df):
 
 # 剩余未转股
 def remain_share(jsl_df):
-    jsl_df['剩余比例'] = jsl_df['剩余规模'].astype(np.float) / jsl_df['发行规模'].astype(np.float) * 100
+    jsl_df['剩余比例'] = jsl_df['剩余规模'].astype(float) / jsl_df['发行规模'].astype(float) * 100
     return jsl_df[jsl_df['剩余比例'] > REMAIN_SHARE]
 
 
+def _bond_code_to_ts_code(code):
+    code = str(code).split('.')[0]
+    suffix = 'SH' if code.startswith('11') else 'SZ'
+    return f'{code}.{suffix}'
+
+
 def get_low_price(code, start, end=datetime.date.today().strftime('%Y-%m-%d')):
-    # 获取某个股票在一个阶段的最低价
-    retry_max = 5
-    try_time = 0
-    df=None
-    while try_time < retry_max:
+    """获取转债区间涨跌幅、最新价与近端波动率（Tushare Pro cb_daily）。"""
+    from configure.settings import get_tushare_pro
+
+    start_fmt = start.replace('-', '')
+    end_fmt = end.replace('-', '')
+    ts_code = _bond_code_to_ts_code(code)
+    df = None
+
+    for _ in range(5):
         try:
-            df = ts.get_k_data(code=code, start=start, end=end)
-        except Exception as e:
-            try_time += 1
-        else:
-            break
+            pro = get_tushare_pro()
+            df = pro.cb_daily(ts_code=ts_code, start_date=start_fmt, end_date=end_fmt)
+            if df is not None and not df.empty:
+                df = df.sort_values('trade_date')
+                break
+        except Exception:
+            df = None
 
-    if retry_max == try_time:
-        return None, None, None
-    if df is None:
-        return  0,0,0
+    if df is None or df.empty:
+        return 0, 0, 0, 0
 
-    pre_closed = df.iloc[0]['close']
-    last_closed = df.iloc[-1]['close']
+    pre_closed = float(df.iloc[0]['close'])
+    last_closed = float(df.iloc[-1]['close'])
+    if pre_closed == 0:
+        return 0, 0, last_closed, 0
+
     m_percent = round((last_closed - pre_closed) / pre_closed * 100, 2)
+
     week_df_ = df.iloc[-6:]
-    if len(week_df_)==0:
+    if len(week_df_) < 2:
         w_percent = 0
-        print(code)
     else:
-        w_pre_closed = week_df_['close'].iloc[0]
-        w_percent = round((last_closed - w_pre_closed) / w_pre_closed * 100, 2)
+        w_pre_closed = float(week_df_['close'].iloc[0])
+        w_percent = round((last_closed - w_pre_closed) / w_pre_closed * 100, 2) if w_pre_closed else 0
 
-
-    # 计算波动
     week_df = df.iloc[-5:]
-    high=week_df['high'].max()
-    low=week_df['low'].min()
-    open_price=week_df['open'].iloc[0]
-    volatility=get_volatility(low,high,open_price)
+    if week_df.empty:
+        volatility = 0
+    else:
+        high = float(week_df['high'].max())
+        low = float(week_df['low'].min())
+        open_price = float(week_df['open'].iloc[0])
+        volatility = get_volatility(low, high, open_price)
 
-    return m_percent, w_percent, last_closed,volatility
+    return m_percent, w_percent, last_closed, volatility
 
-def get_volatility(low,high,open_price):
-    '''
-    获取波动性
-    :return:
-    '''
-    return round((high-low)*1.0/open_price*100,2)
+def get_volatility(low, high, open_price):
+    if not open_price:
+        return 0
+    return round((high - low) * 1.0 / open_price * 100, 2)
 
 # 所有功能放在一起
 def main():
